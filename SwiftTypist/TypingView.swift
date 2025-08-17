@@ -1,73 +1,49 @@
 import SwiftUI
 
-struct CircularString: ExpressibleByStringLiteral {
-    private let strBuffer: Array<UInt8>
+@Observable
+class TypingViewModel {
+    var workingText = ""
+    var currentIndex = 0
+    var rollingText: CircularString
     
-    init?(_ strBuffer: String) {
-        guard let data = strBuffer.data(using: .ascii) else { return nil }
-        self.strBuffer = Array(data)
-        
-    }
-    
-    init(stringLiteral value: String) {
-        self.init(value)!
-    }
-    
-    private func wrappedIndex(for index: Int) -> Int {
-        // Double modulo to handle negative values
-        // ABCDEFGHIJ - 10 count
-        // i = -12: ((-12 % 10) + 10) % 10 = (-2 + 10) % 10 = 8 (I)
-        // i =  12: (( 12 % 10) + 10) % 10 = ( 2 + 10) % 10 = 2 (C)
-        
-        ((index % strBuffer.count) + strBuffer.count) % strBuffer.count
-    }
-    
-    subscript(index: Int) -> Character {
-        Character(UnicodeScalar(strBuffer[wrappedIndex(for: index)]))
-    }
-    
-    subscript<R>(range: R) -> String where R: RangeExpression, R.Bound == Int {
-        let concreteRange = range.relative(to: Int.min..<Int.max)
-        
-        var result: [UInt8] = []
-        result.reserveCapacity(concreteRange.count)
-        
-        for i in concreteRange {
-            result.append(strBuffer[wrappedIndex(for: i)])
-        }
-        
-        return String(bytes: result, encoding: .ascii)!
+    init(rollingText: CircularString) {
+        self.rollingText = rollingText
     }
 }
 
 struct TypingView: View {
-    private let rollingText: CircularString = "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: "
-    @State private var workingText = ""
-    @State private var currentIndex = 0
-    
-    private let scope = 30
+    private var model: TypingViewModel
+    private let backwardScope = 8
+    private let forwardScope = 12
     
     private var countOfCharsOnScreen: Int {
-        scope * 2 + 1
+        forwardScope + backwardScope + 1
+    }
+    
+    init(model: TypingViewModel) {
+        self.model = model
     }
     
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
-                let beforeCurrentLetter = workingText.suffix(scope)
-                let currentCharacter = String(rollingText[currentIndex])
-                let afterCurrentLetter = rollingText[(currentIndex + 1)...(currentIndex + 1 + scope)]
+                let beforeCurrentLetter = model.workingText.suffix(backwardScope)
+                let currentCharacter = String(model.rollingText[model.currentIndex])
+                let afterCurrentLetter = model.rollingText[(model.currentIndex + 1)...(model.currentIndex + 1 + forwardScope)]
+                
+                Spacer(minLength: 0)
                 
                 Text(beforeCurrentLetter)
                     .foregroundStyle(Color.writtenText)
                 
-                if currentCharacter == " " {
-                    Text("_")
-                        .foregroundStyle(Color.currentLetter)
-                } else {
-                    Text(currentCharacter)
-                        .foregroundStyle(Color.currentLetter)
+                Group {
+                    if currentCharacter == " " {
+                        Text("_")
+                    } else {
+                        Text(currentCharacter)
+                    }
                 }
+                .foregroundStyle(Color.currentLetter)
                 
                 Text(afterCurrentLetter)
                     .foregroundStyle(Color.futureText)
@@ -82,13 +58,13 @@ struct TypingView: View {
             guard keyPress.phase != .up, keyPress.key != .return else { return .ignored }
             
             if [KeyEquivalent("\u{7F}"), .delete].contains(keyPress.key) {
-                if currentIndex != 0 {
-                    workingText.removeLast()
-                    currentIndex -= 1
+                if model.currentIndex != 0 {
+                    model.workingText.removeLast()
+                    model.currentIndex -= 1
                 }
             } else {
-                workingText += keyPress.characters
-                currentIndex += keyPress.characters.count
+                model.workingText += keyPress.characters
+                model.currentIndex += keyPress.characters.count
             }
             
             return .handled
@@ -97,7 +73,9 @@ struct TypingView: View {
 }
 
 #Preview {
-    TypingView()
+    @Previewable @State var model = TypingViewModel(rollingText: "The FitnessGram Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start. ")
+    
+    TypingView(model: model)
 }
 
 

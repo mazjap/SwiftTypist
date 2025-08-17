@@ -1,10 +1,3 @@
-//
-//  Item.swift
-//  SwiftTypist
-//
-//  Created by Jordan Christensen on 8/16/25.
-//
-
 import Foundation
 import SwiftData
 
