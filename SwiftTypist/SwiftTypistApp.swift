@@ -25,7 +25,8 @@ struct SwiftTypistApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            ContentView()
+            TypingView()
         }
         .modelContainer(sharedModelContainer)
     }
