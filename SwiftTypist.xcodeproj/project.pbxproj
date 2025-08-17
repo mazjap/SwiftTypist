@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0E8A26DE2E526E13002A3CC5 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 0E8A26DD2E526E13002A3CC5 /* LICENSE */; };
+		0E8A26E02E526E1E002A3CC5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0E8A26DF2E526E1E002A3CC5 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0E8A26922E51183F002A3CC5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +32,8 @@
 		0E8A26812E51183E002A3CC5 /* SwiftTypist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftTypist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E8A26912E51183F002A3CC5 /* SwiftTypistTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftTypistTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E8A269B2E51183F002A3CC5 /* SwiftTypistUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftTypistUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E8A26DD2E526E13002A3CC5 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		0E8A26DF2E526E1E002A3CC5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +82,8 @@
 		0E8A26782E51183E002A3CC5 = {
 			isa = PBXGroup;
 			children = (
+				0E8A26DF2E526E1E002A3CC5 /* README.md */,
+				0E8A26DD2E526E13002A3CC5 /* LICENSE */,
 				0E8A26832E51183E002A3CC5 /* SwiftTypist */,
 				0E8A26942E51183F002A3CC5 /* SwiftTypistTests */,
 				0E8A269E2E51183F002A3CC5 /* SwiftTypistUITests */,
@@ -212,6 +221,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E8A26E02E526E1E002A3CC5 /* README.md in Resources */,
+				0E8A26DE2E526E13002A3CC5 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
