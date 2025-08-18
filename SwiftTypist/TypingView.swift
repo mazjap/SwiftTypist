@@ -12,6 +12,8 @@ class TypingViewModel {
 }
 
 struct TypingView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @FocusState private var isFocused: Bool
     private var model: TypingViewModel
     private let backwardScope = 8
     private let forwardScope = 12
@@ -27,32 +29,16 @@ struct TypingView: View {
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
-                let beforeCurrentLetter = model.workingText.suffix(backwardScope)
-                let currentCharacter = String(model.rollingText[model.currentIndex])
-                let afterCurrentLetter = model.rollingText[(model.currentIndex + 1)...(model.currentIndex + 1 + forwardScope)]
-                
                 Spacer(minLength: 0)
                 
-                Text(beforeCurrentLetter)
-                    .foregroundStyle(Color.writtenText)
-                
-                Group {
-                    if currentCharacter == " " {
-                        Text("_")
-                    } else {
-                        Text(currentCharacter)
-                    }
-                }
-                .foregroundStyle(Color.currentLetter)
-                
-                Text(afterCurrentLetter)
-                    .foregroundStyle(Color.futureText)
+                Text(attributedText)
             }
             .font(.system(size: (geometry.size.width / Double(countOfCharsOnScreen)) * 1.5, weight: .bold, design: .monospaced))
             .position(geometry.size.midPoint())
         }
         .focusable()
         .focusEffectDisabled()
+        .focused($isFocused)
         .lineLimit(1)
         .onKeyPress { keyPress in
             guard keyPress.phase != .up, keyPress.key != .return else { return .ignored }
@@ -69,6 +55,38 @@ struct TypingView: View {
             
             return .handled
         }
+        .onChange(of: scenePhase) { // TODO: - This logic should be owned by the parent, but just testing for now
+            if scenePhase == .active {
+                isFocused = true
+            }
+        }
+    }
+    
+    private var attributedText: AttributedString {
+        let beforeCurrentLetter = model.workingText.suffix(backwardScope)
+        let currentCharacter = String(model.rollingText[model.currentIndex])
+        let afterCurrentLetter = model.rollingText[(model.currentIndex + 1)...(model.currentIndex + 1 + forwardScope)]
+        
+        var attributedStr = AttributedString()
+        
+        var precedingText = AttributedString(beforeCurrentLetter)
+        precedingText.foregroundColor = .writtenText
+        
+        attributedStr.append(precedingText)
+        
+        var currentLetter = AttributedString(currentCharacter)
+        currentLetter.foregroundColor = .currentLetter
+        currentLetter.underlineColor = .currentLetter
+        currentLetter.underlineStyle = .single
+        
+        attributedStr.append(currentLetter)
+        
+        var succeedingText = AttributedString(afterCurrentLetter)
+        succeedingText.foregroundColor = .futureText
+        
+        attributedStr.append(succeedingText)
+        
+        return attributedStr
     }
 }
 
@@ -78,11 +96,16 @@ struct TypingView: View {
     TypingView(model: model)
 }
 
+extension NSColor {
+    static let writtenText = NSColor(red: 0.4, green: 0.4, blue: 0.4, alpha: 1)
+    static let currentLetter = NSColor.white
+    static let futureText = NSColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1)
+}
 
 extension Color {
-    static let writtenText = Color(red: 0.4, green: 0.4, blue: 0.4, opacity: 1)
-    static let currentLetter = Color.white
-    static let futureText = Color(red: 0.7, green: 0.7, blue: 0.7, opacity: 1)
+    static let writtenText = Color(nsColor: .writtenText)
+    static let currentLetter = Color(nsColor: .currentLetter)
+    static let futureText = Color(nsColor: .futureText)
 }
 
 extension CGSize {
