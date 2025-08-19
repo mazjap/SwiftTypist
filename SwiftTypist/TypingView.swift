@@ -15,14 +15,16 @@ struct TypingView: View {
     @Environment(\.scenePhase) private var scenePhase
     @FocusState private var isFocused: Bool
     private var model: TypingViewModel
-    private let backwardScope = 8
-    private let forwardScope = 12
+    private let precedingCount: Int
+    private let succeedingCount: Int
     
     private var countOfCharsOnScreen: Int {
-        forwardScope + backwardScope + 1
+        succeedingCount + precedingCount + 1
     }
     
-    init(model: TypingViewModel) {
+    init(precedingCount: Int = 10, succeedingCount: Int = 24, model: TypingViewModel) {
+        self.precedingCount = precedingCount
+        self.succeedingCount = succeedingCount
         self.model = model
     }
     
@@ -63,25 +65,25 @@ struct TypingView: View {
     }
     
     private var attributedText: AttributedString {
-        let beforeCurrentLetter = model.workingText.suffix(backwardScope)
-        let currentCharacter = String(model.rollingText[model.currentIndex])
-        let afterCurrentLetter = model.rollingText[(model.currentIndex + 1)...(model.currentIndex + 1 + forwardScope)]
+        let precedingStr = model.workingText.suffix(precedingCount)
+        let currentLetterStr = String(model.rollingText[model.currentIndex])
+        let succeedingStr = model.rollingText[(model.currentIndex + 1)...(model.currentIndex + 1 + succeedingCount)]
         
         var attributedStr = AttributedString()
         
-        var precedingText = AttributedString(beforeCurrentLetter)
+        var precedingText = AttributedString(precedingStr)
         precedingText.foregroundColor = .writtenText
         
         attributedStr.append(precedingText)
         
-        var currentLetter = AttributedString(currentCharacter)
+        var currentLetter = AttributedString(currentLetterStr)
         currentLetter.foregroundColor = .currentLetter
         currentLetter.underlineColor = .currentLetter
         currentLetter.underlineStyle = .single
         
         attributedStr.append(currentLetter)
         
-        var succeedingText = AttributedString(afterCurrentLetter)
+        var succeedingText = AttributedString(succeedingStr)
         succeedingText.foregroundColor = .futureText
         
         attributedStr.append(succeedingText)

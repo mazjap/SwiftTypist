@@ -20,7 +20,7 @@ struct SwiftTypistApp: App {
     var body: some Scene {
         WindowGroup {
 //            ContentView()
-            TypingView(model: typingModel)
+            TypingDebugView(model: typingModel)
         }
         .modelContainer(sharedModelContainer)
     }
