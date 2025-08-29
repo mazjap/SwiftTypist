@@ -14,7 +14,6 @@ enum TypingMode {
         case numbers
         case punctuation
     }
-    
     enum ProgrammingLanguage {
         case swift, python, javascript, c
     }

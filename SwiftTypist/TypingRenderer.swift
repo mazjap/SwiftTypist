@@ -56,6 +56,8 @@ struct TypingRenderer: View {
             
             if errorIndices.contains(absoluteIndex) {
                 charAttributedStr.foregroundColor = .red
+                charAttributedStr.strikethroughColor = .red
+                charAttributedStr.strikethroughStyle = .single
             } else {
                 charAttributedStr.foregroundColor = .writtenText
             }
